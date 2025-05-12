@@ -55,12 +55,19 @@ const movieAPIKey = "dcb5e23d";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const query = "interstellar";
 
   // To perform a side effect on initial mounting of our app.
   useEffect(() => {
-    fetch(`http://www.omdbapi.com/?apikey=${movieAPIKey}&s=interstellar`)
-      .then(res => res.json())
-      .then(data => setMovies(data.Search));
+    const fetchMovies = async () => {
+      setIsLoading(true);
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${movieAPIKey}&s=${query}`);
+      const data = await res.json();
+      setMovies(data.Search);
+      setIsLoading(false);
+    }
+    fetchMovies();
   }, [])
 
   return (
@@ -74,7 +81,7 @@ export default function App() {
 
       <Main>
         <Box>
-          <MoviesList movies={movies} />
+          {isLoading ? <Loader /> : <MoviesList movies={movies} />}
         </Box>
         <Box>
           <Summary watched={watched} />
@@ -155,6 +162,10 @@ function MoviesList({ movies }) {
       )}
     </ul>
   )
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>
 }
 
 function Movie({ movie }) {
