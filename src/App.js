@@ -53,17 +53,19 @@ const average = (arr) =>
 const movieAPIKey = "dcb5e23d";
 
 export default function App() {
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const query = "interstellar";
 
   // To perform a side effect on initial mounting of our app.
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setIsLoading(true);
+        setError('');
+
         const res = await fetch(`http://www.omdbapi.com/?apikey=${movieAPIKey}&s=${query}`);
 
         if (!res.ok) throw new Error("Something went wrong!");
@@ -78,16 +80,24 @@ export default function App() {
       } finally {
         setIsLoading(false);
       }
+
+      if (query.length < 3) {
+        setMovies([]);
+        setError('');
+        return;
+      }
     }
     fetchMovies();
-  }, [])
+    // Whenever the 'query' will be changed, the useEffect 
+    // code will run. 
+  }, [query])
 
   return (
     <>
       {/* Using component composition to avoid prop-drilling */}
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -131,8 +141,7 @@ function Logo() {
   )
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
