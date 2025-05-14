@@ -35,6 +35,18 @@ export default function MovieDetails({ selectedId, watched, onCloseMovie, onAddW
         getMovieDetails();
     }, [selectedId]);
 
+    useEffect(() => {
+        if (!title) return;
+        document.title = `Movie | ${title}`
+
+        // If we return a function from a useEffect hook,
+        // it is called a cleanup function that is executed when the 
+        // side effect keeps happening after either re-render or unmounting of component.
+        return function () {
+            document.title = 'React Watchlist';
+        }
+    }, [title])
+
     function handleAdd() {
         const newWatchedMovie = {
             imdbID: selectedId,
