@@ -110,8 +110,10 @@ export default function App() {
         setMovies(data.Search);
         setError('');
       } catch (error) {
-        console.error(error.message);
-        if (error.name !== "AbortError") setError(error.message);
+        if (error.name !== "AbortError") {
+          console.log(error.message);
+          setError(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -122,6 +124,7 @@ export default function App() {
         return;
       }
     }
+    handleCloseMovie();
     fetchMovies();
 
     return function () {
