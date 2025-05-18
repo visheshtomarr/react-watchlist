@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { movieAPIKey } from "../App";
 import Loader from "./Loader";
 import StarRating from "./StarRating";
+import { useKey } from "../hooks/useKey";
 
 export default function MovieDetails({ selectedId, watched, onCloseMovie, onAddWatchedMovie }) {
     const [movie, setMovie] = useState({});
@@ -56,21 +57,7 @@ export default function MovieDetails({ selectedId, watched, onCloseMovie, onAddW
         }
     }, [title])
 
-    useEffect(() => {
-        function escapeKeyPress(e) {
-            if (e.code === 'Escape') {
-                onCloseMovie();
-            }
-        }
-        document.addEventListener('keydown', escapeKeyPress);
-
-        // We will need to remove the event listener after one movie
-        // is mounted otherwise, if any other movie is mounted, it will
-        // again add event listener to the document.
-        return function () {
-            document.removeEventListener('keydown', escapeKeyPress);
-        }
-    }, [onCloseMovie])
+    useKey('Escape', onCloseMovie);
 
     function handleAdd() {
         const newWatchedMovie = {
