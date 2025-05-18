@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import ErrorMessage from "./components/ErrorMessage";
 import NavBar from "./components/NavBar";
 import Logo from "./components/Logo";
@@ -23,14 +24,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  // const [watched, setWatched] = useState([]);
-  // We are using a callback function to set the watched state initially
-  // from the local storage.
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem('watched');
-    if (storedValue) return JSON.parse(storedValue);
-    return [];
-  });
+  const [watched, setWatched] = useLocalStorage([], 'watched');
 
   function handleSelectMovie(id) {
     setSelectedId(selectedId => id === selectedId ? null : id);
@@ -48,12 +42,6 @@ export default function App() {
   function handleDeleteWatchedMovie(id) {
     setWatched(watched => watched.filter(movie => movie.imdbID !== id));
   }
-
-  // This hook will synchronize the watched movie state with the movies
-  // in local storage.
-  useEffect(() => {
-    localStorage.setItem('watched', JSON.stringify(watched));
-  }, [watched])
 
   // To perform a side effect on initial mounting of our app.
   useEffect(() => {
