@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { movieAPIKey } from "../App";
 import Loader from "./Loader";
 import StarRating from "./StarRating";
@@ -7,6 +7,15 @@ export default function MovieDetails({ selectedId, watched, onCloseMovie, onAddW
     const [movie, setMovie] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [userRating, setUserRating] = useState('');
+
+    const countRef = useRef(0);
+
+    // With this we can count the number of times user has given 
+    // a rating to a movie until finally it is added to the movie's list.
+    // This data will persist across renders because of 'useRef'.
+    useEffect(() => {
+        if (userRating) countRef.current++;
+    }, [userRating])
 
     const isWatched = watched.map(watchedMovie => watchedMovie.imdbID).includes(selectedId);
     const watchedUserRating = watched.find(watchedMovie => watchedMovie.imdbID === selectedId)?.userRating;
@@ -71,7 +80,8 @@ export default function MovieDetails({ selectedId, watched, onCloseMovie, onAddW
             poster,
             imdbRating: Number(imdbRating),
             runtime: Number(runtime.split(' ')[0]),
-            userRating
+            userRating,
+            countUserRatingDecision: countRef.current
         }
 
         onAddWatchedMovie(newWatchedMovie);
